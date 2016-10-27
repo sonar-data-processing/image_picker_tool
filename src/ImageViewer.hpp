@@ -9,29 +9,37 @@
 #include <opencv2/opencv.hpp>
 
 namespace image_picker_tool {
-    
+
 class ImageDrawer : public QWidget {
     Q_OBJECT
 
 public:
-    ImageDrawer(QWidget *parent = 0);    
+    ImageDrawer(QWidget *parent = 0);
     void setPixmap(const QPixmap& pixmap);
     void adjustSize();
-    
+
     void mouseReleaseEvent(QMouseEvent * event);
 
     const QPixmap* pixmap() const  {
         return &pixmap_;
     }
 
+    const double scalefactor() const {
+        return scale_factor_;
+    }
+
+    void setScaleFactor(double scale_factor) {
+        scale_factor_ = scale_factor;
+    }
+
 protected:
     virtual void paintEvent(QPaintEvent *event);
 
 private:
+
     QPixmap pixmap_;
     std::vector<QPointF> points_;
-    
-    
+    double scale_factor_;
 };
 
 class ImageViewer : public QMainWindow {
@@ -50,7 +58,6 @@ private:
 
     QScrollArea *scrollArea_;
     ImageDrawer *imageDrawer_;
-    double scaleFactor_;
 };
 
 }

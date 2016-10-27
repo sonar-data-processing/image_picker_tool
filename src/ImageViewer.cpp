@@ -3,9 +3,10 @@
 #define SCENE_SIZE INT_MAX
 
 namespace image_picker_tool {
-    
-ImageDrawer::ImageDrawer(QWidget *parent) {
-    
+
+ImageDrawer::ImageDrawer(QWidget *parent)
+    : scale_factor_(1.0)
+{
 }
 
 void ImageDrawer::paintEvent(QPaintEvent *event) {
@@ -15,13 +16,9 @@ void ImageDrawer::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, false);
-
     painter.save();
-    QSize pixmap_size = pixmap_.size();
-
-    pixmap_size.scale(size(), Qt::KeepAspectRatio);
-    QPixmap scale_pixmap =  pixmap_.scaled(pixmap_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    painter.drawPixmap(QPoint(), scale_pixmap);
+    painter.scale(scale_factor_, scale_factor_);
+    painter.drawPixmap(QPoint(), pixmap_);
     painter.restore();
 }
 
@@ -34,8 +31,7 @@ void ImageDrawer::adjustSize() {
 }
 
 void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
-    if (event->button() == Qt::LeftButton){
-        // printf("Point position: (%0.2f, %0.2f)\n", event.localPos().x(), event.localPos().y());
+    if (event->button() == Qt::LeftButton) {
     }
 }
 
@@ -44,7 +40,6 @@ void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
 ImageViewer::ImageViewer()
     : imageDrawer_(new ImageDrawer())
     , scrollArea_(new QScrollArea())
-    , scaleFactor_(1.0)
 {
     imageDrawer_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
@@ -58,9 +53,9 @@ void ImageViewer::loadImage(const cv::Mat& img) {
     CV_Assert(img.depth() == CV_8U && img.channels() == 3);
     QImage image = QImage((const uchar*)img.data,img.cols,img.rows, static_cast<int>(img.step), QImage::Format_RGB888);
     image = image.rgbSwapped();
+    imageDrawer_->setScaleFactor(1.0);
     imageDrawer_->setPixmap(QPixmap::fromImage(image));
     imageDrawer_->adjustSize();
-    scaleFactor_ = 1.0;
 }
 
 bool ImageViewer::eventFilter(QObject *obj, QEvent* evt) {
@@ -80,8 +75,10 @@ bool ImageViewer::eventFilter(QObject *obj, QEvent* evt) {
 
 void ImageViewer::scaleImage(double factor) {
     Q_ASSERT(imageLabel->pixmap());
-    scaleFactor_ *= factor;
-    imageDrawer_->resize(imageDrawer_->pixmap()->size() * scaleFactor_);
+
+    imageDrawer_->setScaleFactor(imageDrawer_->scalefactor() * factor);
+    imageDrawer_->resize(imageDrawer_->pixmap()->size() * imageDrawer_->scalefactor());
+
     adjustScrollBar(scrollArea_->horizontalScrollBar(), factor);
     adjustScrollBar(scrollArea_->verticalScrollBar(), factor);
 }
