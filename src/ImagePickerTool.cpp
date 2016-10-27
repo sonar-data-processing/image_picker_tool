@@ -1,4 +1,4 @@
-#include "image_picker_tool/ImagePickerTool.hpp"
+#include "ImagePickerTool.hpp"
 
 namespace image_picker_tool {
 

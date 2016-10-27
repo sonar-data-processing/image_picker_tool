@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include <opencv2/opencv.hpp>
-#include "image_picker_tool/ImageViewer.hpp"
+#include "ImageViewer.hpp"
 
 namespace image_picker_tool {
 

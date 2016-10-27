@@ -1,4 +1,4 @@
-#include "image_picker_tool/ImageViewer.hpp"
+#include "ImageViewer.hpp"
 
 #define SCENE_SIZE INT_MAX
 
@@ -35,7 +35,7 @@ void ImageDrawer::adjustSize() {
 
 void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
     if (event->button() == Qt::LeftButton){
-        printf("Point position: (%0.2f, %0.2f)\n", event.localPos().x(), event.localPos().y());
+        // printf("Point position: (%0.2f, %0.2f)\n", event.localPos().x(), event.localPos().y());
     }
 }
 

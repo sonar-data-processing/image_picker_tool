@@ -1,12 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
 project (image_picker_tool)
 
-include ( "${WORKSPACE_DIR}/base/cmake/Dependencies.cmake"  )
-
-add_project_dependency (base ${WORKSPACE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-setup_headers ( ${PROJECT_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/src" )
-
 include ( FindPkgConfig  )
 find_package ( Qt4 REQUIRED )
 find_package ( OpenCV REQUIRED )
