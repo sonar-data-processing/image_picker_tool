@@ -16,6 +16,6 @@ int main(int argc, char **argv) {
     ImagePickerTool image_picker_tool;
     image_picker_tool.loadImage(img);
     image_picker_tool.show();
-    
+
     return app.exec();
 }

@@ -1,6 +1,21 @@
 cmake_minimum_required (VERSION 2.8)
 project (image_picker_tool)
 
+set (
+    ${PROJECT_NAME}_SOURCE_DIR
+    ${PROJECT_SOURCE_DIR}/src
+    CACHE PATH "Image Picker Tool Source Directory"
+    FORCE
+)
+
+set (
+    ${PROJECT_NAME}_INCLUDE_DIR
+    ${PROJECT_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}
+    CACHE PATH "Image Picker Tool Include Directory"
+    FORCE
+)
+
 include ( FindPkgConfig  )
 find_package ( Qt4 REQUIRED )
 find_package ( OpenCV REQUIRED )
@@ -11,7 +26,7 @@ add_definitions(${QT_DEFINITIONS})
 set(
     image_picker_tool_HEADERS_MOC
     src/ImagePickerTool.hpp
-    src/ImageViewer.hpp
+    src/ImageDrawer.hpp
 )
 
 qt4_wrap_cpp( image_picker_tool_MOC_CPP ${image_picker_tool_HEADERS_MOC} )
@@ -25,8 +40,6 @@ set (
 )
 
 file ( GLOB SRCS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src/*.cpp )
-
-set ( SRCS ${SRCS} ${sonar_target_tracking_SOURCES} )
 
 include_directories (
     ${image_picker_tool_INCLUDE_DIR}

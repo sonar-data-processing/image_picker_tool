@@ -1,22 +1,47 @@
-#ifndef image_picker_tool_ImagePicker_hpp
-#define image_picker_tool_ImagePicker_hpp
+#ifndef image_picker_tool_ImagePickerTool_hpp
+#define image_picker_tool_ImagePickerTool_hpp
 
 #include <QtGui>
+#include <QMainWindow>
+#include <QApplication>
 #include <opencv2/opencv.hpp>
-#include "ImageViewer.hpp"
+#include "ImageDrawer.hpp"
 
 namespace image_picker_tool {
 
-class ImagePickerTool : public QWidget {
+class ImagePickerTool : public QMainWindow {
     Q_OBJECT
-public:
-    explicit ImagePickerTool(QWidget *parent = 0);
-    void loadImage(const cv::Mat& src);
-    
-private:
-    ImageViewer *image_viewer_;
-};
-    
-} /* namespace image_picker_tool */
 
-#endif /* image_picker_tool_ImagePicker_hpp */
+public:
+    explicit ImagePickerTool();
+    void loadImage(const cv::Mat& source);
+    void appendPaths(const QList<PathElement>& path_list);
+
+    void saveCurrentPath();
+    void removeLastPoint();
+    void removeLastPath();
+    void clearPaths();
+
+    const ImageDrawer* imageDrawer() const {
+        return image_drawer_;
+    }
+
+signals:
+    void pathAppended(image_picker_tool::PathElement& path_list);
+    void pointChanged(image_picker_tool::PathElement& path_element);
+
+protected:
+    virtual bool eventFilter(QObject *obj, QEvent* evt);
+
+private:
+    void scaleImage(double factor);
+    void adjustScrollBar(QScrollBar *scrollBar, double factor);
+
+    QScrollArea *scroll_area_;
+    ImageDrawer *image_drawer_;
+
+};
+
+}
+
+#endif /* image_picker_tool_ImagePickerTool_hpp */
