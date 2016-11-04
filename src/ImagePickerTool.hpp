@@ -15,7 +15,7 @@ class ImagePickerTool : public QMainWindow {
 public:
     explicit ImagePickerTool();
     void loadImage(const cv::Mat& source);
-    void appendPaths(const QList<PathElement>& path_list);
+    void appendPaths(const QList<QList<QPointF> >& path_list, const QList<QVariant>& user_data_list);
 
     void saveCurrentPath();
     void removeLastPoint();
@@ -27,8 +27,8 @@ public:
     }
 
 signals:
-    void pathAppended(image_picker_tool::PathElement& path_list);
-    void pointChanged(image_picker_tool::PathElement& path_element);
+    void pathAppended(QList<QPointF>&, QVariant&);
+    void pointChanged(const QList<QPointF>&, const QVariant&);
 
 protected:
     virtual bool eventFilter(QObject *obj, QEvent* evt);

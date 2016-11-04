@@ -125,7 +125,7 @@ void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
                 edit_path_index_ = -1;
                 edit_point_index_ = -1;
                 current_mode_ = kNewPathMode;
-                emit pointChanged(path_element);
+                emit pointChanged(path_element.path, path_element.userData);
             }
 
             update();
@@ -203,7 +203,8 @@ void ImageDrawer::savePath() {
         point_list_.clear();
         current_mode_ = kNewPathMode;
         update();
-        emit pathAppended(path_list_.last());
+        PathElement element = path_list_.last();
+        emit pathAppended(element.path, element.userData);
     }
 }
 

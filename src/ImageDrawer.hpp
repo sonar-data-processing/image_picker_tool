@@ -58,8 +58,8 @@ public:
     void savePath();
 
 signals:
-    void pathAppended(image_picker_tool::PathElement& path_element);
-    void pointChanged(image_picker_tool::PathElement& path_element);
+    void pathAppended(QList<QPointF>&, QVariant&);
+    void pointChanged(const QList<QPointF>&, const QVariant&);
 
 protected:
     virtual void paintEvent(QPaintEvent *event);

@@ -14,8 +14,8 @@ ImagePickerTool::ImagePickerTool()
     scroll_area_->setWidget(image_drawer_);
     scroll_area_->viewport()->installEventFilter(this);
 
-    connect(image_drawer_, SIGNAL(pathAppended(image_picker_tool::PathElement&)), this, SIGNAL(pathAppended(image_picker_tool::PathElement&)));
-    connect(image_drawer_, SIGNAL(pointChanged(image_picker_tool::PathElement&)), this, SIGNAL(pointChanged(image_picker_tool::PathElement&)));
+    connect(image_drawer_, SIGNAL(pathAppended(QList<QPointF>&, QVariant&)), this, SIGNAL(pathAppended(QList<QPointF>&, QVariant&)));
+    connect(image_drawer_, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&)), this, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&)));
 
     setCentralWidget(scroll_area_);
 }
@@ -90,8 +90,15 @@ void ImagePickerTool::clearPaths() {
     image_drawer_->update();
 }
 
-void ImagePickerTool::appendPaths(const QList<PathElement>& path_list) {
-    image_drawer_->path_list_.append(path_list);
+void ImagePickerTool::appendPaths(const QList<QList<QPointF> >& path_list, const QList<QVariant>& user_data_list) {
+    Q_ASSERT(path_list.size() == user_data_list.size());
+
+    QList<PathElement> path_element_list;
+    for (size_t i = 0; i < path_list.size(); i++) {
+        path_element_list << PathElement(path_list[i], user_data_list[i]);        
+    }
+
+    image_drawer_->path_list_.append(path_element_list);
 }
 
 } /* namespace image_picker_tool */
