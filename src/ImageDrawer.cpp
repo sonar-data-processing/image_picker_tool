@@ -9,6 +9,8 @@ ImageDrawer::ImageDrawer(QWidget *parent)
     , current_mode_(kNewPathMode)
     , edit_path_index_(-1)
     , edit_point_index_(-1)
+    , selected_index_(-1)
+    , last_edit_mouse_pos_(-1,-1)
 {
 }
 
@@ -24,6 +26,10 @@ void ImageDrawer::paintEvent(QPaintEvent *event) {
     painter.drawPixmap(QPoint(), pixmap_);
     painter.restore();
 
+    if (!path_list_.isEmpty()) {
+        drawPathList(painter, path_list_);
+    }
+
     if (!point_list_.isEmpty()) {
         drawPath(painter, point_list_);
         drawPointList(painter, point_list_, kPointRadius);
@@ -35,10 +41,6 @@ void ImageDrawer::paintEvent(QPaintEvent *event) {
             painter.drawLine(last_point * scale_factor_, mouse_pos_);
             painter.restore();
         }
-    }
-
-    if (!path_list_.isEmpty()) {
-        drawPathList(painter, path_list_, QBrush(Qt::green));
     }
 
     if (edit_path_index_ != -1 && edit_point_index_ != -1) {
@@ -84,10 +86,12 @@ void ImageDrawer::drawPath(QPainter& painter, const QList<QPointF>& points, QBru
     painter.restore();
 }
 
-void ImageDrawer::drawPathList(QPainter& painter, const QList<PathElement>& path_list, QBrush brush) {
+void ImageDrawer::drawPathList(QPainter& painter, const QList<PathElement>& path_list) {
+    int index = 0;
     QList<PathElement>::const_iterator it;
-    for (it = path_list.begin(); it != path_list.end(); it++) {
-        drawPath(painter, (*it).path, brush, true);
+    for (it = path_list.begin(); it != path_list.end(); it++, index++) {
+        QBrush brush = (index == selected_index_) ? QBrush(Qt::blue) : QBrush(Qt::green);
+        drawPath(painter, (*it).path, brush , true);
         drawPointList(painter, (*it).path, kPointRadius, brush);
     }
 }
@@ -97,7 +101,7 @@ void ImageDrawer::setPixmap(const QPixmap& pixmap) {
 }
 
 void ImageDrawer::adjustSize() {
-    if (!pixmap_.isNull()) resize(pixmap_.size());
+    if (!pixmap_.isNull()) resize(pixmap_.size() * scale_factor_);
 }
 
 void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
@@ -113,19 +117,31 @@ void ImageDrawer::mouseReleaseEvent(QMouseEvent * event) {
                 double xf = event->pos().x() / scale_factor_;
                 double yf = event->pos().y() / scale_factor_;
                 QPointF point = QPointF(xf, yf);
-                float point_difference;
-                int index = findMinimumPointDifference(point_list_, point, point_difference);
 
-                if(point_difference > kPointRadius || index == -1) {
-                    point_list_ << point;
+                QBool ignore = QBool(false);
+                emit pointAppened(point, ignore);
+
+                if (!ignore) {
+                    float point_difference;
+                    int index = findMinimumPointDifference(point_list_, point, point_difference);
+
+                    if(point_difference > kPointRadius || index == -1) {
+                        point_list_ << point;
+                    }
                 }
             }
             else if (current_mode_ == kEditPointMode) {
                 PathElement path_element = path_list_[edit_path_index_];
+                QBool ignore = QBool(false);
+                emit pointChanged(path_element.path, path_element.userData, ignore);
+
+                if (ignore) {
+                    path_list_[edit_path_index_].path[edit_point_index_] = last_edit_mouse_pos_;
+                }
+
                 edit_path_index_ = -1;
                 edit_point_index_ = -1;
                 current_mode_ = kNewPathMode;
-                emit pointChanged(path_element.path, path_element.userData);
             }
 
             update();
@@ -146,9 +162,11 @@ void ImageDrawer::mousePressEvent(QMouseEvent *event) {
 
                 edit_path_index_ = -1;
                 edit_point_index_ = -1;
+                last_edit_mouse_pos_ = QPointF(-1, -1);
 
                 if (findNearPoint(point, edit_path_index_, edit_point_index_)) {
                     current_mode_ = kEditPointMode;
+                    last_edit_mouse_pos_ = path_list_[edit_path_index_].path[edit_point_index_];
                     update();
                     return;
                 }
@@ -199,12 +217,11 @@ void ImageDrawer::checkLastPoint(QList<QPointF>& point_list) {
 
 void ImageDrawer::savePath() {
     if (point_list_.size() > 2) {
-        path_list_ << PathElement(point_list_);
+        path_list_.append(PathElement(point_list_));
         point_list_.clear();
         current_mode_ = kNewPathMode;
         update();
-        PathElement element = path_list_.last();
-        emit pathAppended(element.path, element.userData);
+        emit pathAppended(path_list_.last().path, path_list_.last().userData);
     }
 }
 

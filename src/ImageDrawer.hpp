@@ -59,7 +59,8 @@ public:
 
 signals:
     void pathAppended(QList<QPointF>&, QVariant&);
-    void pointChanged(const QList<QPointF>&, const QVariant&);
+    void pointChanged(const QList<QPointF>&, const QVariant&, QBool&);
+    void pointAppened(const QPointF&, QBool&);
 
 protected:
     virtual void paintEvent(QPaintEvent *event);
@@ -83,7 +84,7 @@ private:
 
     virtual void drawPointList(QPainter& painter, const QList<QPointF>& point_list, qreal radius, QBrush brush = QBrush(Qt::red));
     virtual void drawPath(QPainter& painter, const QList<QPointF>& points, QBrush brush = QBrush(Qt::red), bool close_path = false);
-    virtual void drawPathList(QPainter& painter, const QList<PathElement>& path_list, QBrush brush = QBrush(Qt::red));
+    virtual void drawPathList(QPainter& painter, const QList<PathElement>& path_list);
     void checkLastPoint(QList<QPointF>& point_list);
     int findMinimumPointDifference(const QList<QPointF>& list, const QPointF& pt, float& difference);
     bool findNearPoint(const QPointF& point, int& path_index, int& point_index);
@@ -95,12 +96,15 @@ private:
     double scale_factor_;
     bool is_left_button_pressed_;
     QPoint mouse_pos_;
+    QPointF last_edit_mouse_pos_;
     qint64 last_double_click_time_;
 
     int edit_path_index_;
     int edit_point_index_;
 
     PickerMode current_mode_;
+
+    int selected_index_;
 
     friend class ImagePickerTool;
 };

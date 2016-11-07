@@ -26,9 +26,22 @@ public:
         return image_drawer_;
     }
 
+    void setSelected(int selected_index) {
+        image_drawer_->selected_index_ = selected_index;
+        image_drawer_->update();
+    }
+
+    void removePath(int index) {
+        image_drawer_->path_list_.removeAt(index);
+        image_drawer_->update();
+    }
+
+    int findIndexByUserData(const QVariant& user_data);
+
 signals:
     void pathAppended(QList<QPointF>&, QVariant&);
-    void pointChanged(const QList<QPointF>&, const QVariant&);
+    void pointChanged(const QList<QPointF>&, const QVariant&, QBool&);
+    void pointAppened(const QPointF&, QBool&);
 
 protected:
     virtual bool eventFilter(QObject *obj, QEvent* evt);

@@ -15,7 +15,8 @@ ImagePickerTool::ImagePickerTool()
     scroll_area_->viewport()->installEventFilter(this);
 
     connect(image_drawer_, SIGNAL(pathAppended(QList<QPointF>&, QVariant&)), this, SIGNAL(pathAppended(QList<QPointF>&, QVariant&)));
-    connect(image_drawer_, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&)), this, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&)));
+    connect(image_drawer_, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&, QBool&)), this, SIGNAL(pointChanged(const QList<QPointF>&, const QVariant&, QBool&)));
+    connect(image_drawer_, SIGNAL(pointAppened(const QPointF&, QBool&)), this, SIGNAL(pointAppened(const QPointF&, QBool&)));
 
     setCentralWidget(scroll_area_);
 }
@@ -24,7 +25,6 @@ void ImagePickerTool::loadImage(const cv::Mat& img) {
     CV_Assert(img.depth() == CV_8U && img.channels() == 3);
     QImage image = QImage((const uchar*)img.data,img.cols,img.rows, static_cast<int>(img.step), QImage::Format_RGB888);
     image = image.rgbSwapped();
-    image_drawer_->setScaleFactor(1.0);
     image_drawer_->setPixmap(QPixmap::fromImage(image));
     image_drawer_->adjustSize();
     image_drawer_->update();
@@ -46,8 +46,6 @@ bool ImagePickerTool::eventFilter(QObject *obj, QEvent* evt) {
 }
 
 void ImagePickerTool::scaleImage(double factor) {
-    Q_ASSERT(imageLabel->pixmap());
-
     image_drawer_->setScaleFactor(image_drawer_->scalefactor() * factor);
     image_drawer_->resize(image_drawer_->pixmap()->size() * image_drawer_->scalefactor());
 
@@ -95,10 +93,19 @@ void ImagePickerTool::appendPaths(const QList<QList<QPointF> >& path_list, const
 
     QList<PathElement> path_element_list;
     for (size_t i = 0; i < path_list.size(); i++) {
-        path_element_list << PathElement(path_list[i], user_data_list[i]);        
+        path_element_list << PathElement(path_list[i], user_data_list[i]);
     }
 
     image_drawer_->path_list_.append(path_element_list);
+}
+
+int ImagePickerTool::findIndexByUserData(const QVariant& user_data) {
+    for (size_t i = 0; i < image_drawer_->path_list_.count(); i++){
+        if (image_drawer_->path_list_[i].userData == user_data) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 } /* namespace image_picker_tool */
