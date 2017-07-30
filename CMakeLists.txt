@@ -23,6 +23,8 @@ file ( GLOB HEADERS ${PROJECT_SOURCE_DIR}/src/*.hpp )
 
 include_directories (
     ${PROJECT_SOURCE_DIR}/src
+    ${CMAKE_INSTALL_PREFIX}/include
+    ${CMAKE_INSTALL_PREFIX}/include/sonar_toolkit
 )
 
 add_library (

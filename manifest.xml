@@ -3,4 +3,5 @@
         It contains a qt component to select regions in a image.
     </description>
     <author>Gustavo Neves/gustavo.neves12@gmail.com</author>
+    <depend package="sonar_toolkit/base" />
 </package>

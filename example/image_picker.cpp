@@ -1,15 +1,14 @@
 #include <iostream>
 #include <QApplication>
+#include <base/test_config.h>
 #include "ImagePickerTool.hpp"
-
-#define DATA_PATH "/home/gustavoneves/masters_degree/dev/sonar_toolkit/data"
 
 using namespace image_picker_tool;
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
 
-    const std::string image_path = std::string(DATA_PATH) + "/images/pipeline.png";
+    const std::string image_path = DATA_PATH_STRING+"/images/gemini-jequitaia.0-1.png";
 
     cv::Mat img = cv::imread(image_path.c_str(), 1);
 
