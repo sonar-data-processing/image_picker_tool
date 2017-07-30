@@ -1,0 +1,6 @@
+<package>
+    <description brief="image picker tool">
+        It contains a qt component to select regions in a image.
+    </description>
+    <author>Gustavo Neves/gustavo.neves12@gmail.com</author>
+</package>

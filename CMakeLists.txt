@@ -1,22 +1,8 @@
 cmake_minimum_required (VERSION 2.8)
 project (image_picker_tool)
 
-set (
-    ${PROJECT_NAME}_SOURCE_DIR
-    ${PROJECT_SOURCE_DIR}/src
-    CACHE PATH "Image Picker Tool Source Directory"
-    FORCE
-)
-
-set (
-    ${PROJECT_NAME}_INCLUDE_DIR
-    ${PROJECT_SOURCE_DIR}/src
-    ${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}
-    CACHE PATH "Image Picker Tool Include Directory"
-    FORCE
-)
-
 include ( FindPkgConfig  )
+
 find_package ( Qt4 REQUIRED )
 find_package ( OpenCV REQUIRED )
 
@@ -24,30 +10,24 @@ include( ${QT_USE_FILE} )
 add_definitions(${QT_DEFINITIONS})
 
 set(
-    image_picker_tool_HEADERS_MOC
+    ${PROJECT_NAME}_HEADERS_MOC
     src/ImagePickerTool.hpp
     src/ImageDrawer.hpp
 )
 
 qt4_wrap_cpp( image_picker_tool_MOC_CPP ${image_picker_tool_HEADERS_MOC} )
 
-set (
-    ${PROJECT_NAME}_INCLUDE_DIR
-    ${PROJECT_SOURCE_DIR}/src
-    ${CMAKE_BINARY_DIR}/include
-    CACHE PATH "Image Picker Tool include directory"
-    FORCE
-)
 
-file ( GLOB SRCS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src/*.cpp )
+file ( GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp )
+file ( GLOB HEADERS ${PROJECT_SOURCE_DIR}/src/*.hpp )
 
 include_directories (
-    ${image_picker_tool_INCLUDE_DIR}
+    ${PROJECT_SOURCE_DIR}/src
 )
 
 add_library (
     image_picker_tool STATIC
-    ${SRCS}
+    ${SOURCES}
     ${image_picker_tool_MOC_CPP}
 )
 
@@ -60,11 +40,26 @@ target_link_libraries (
 add_executable (
     image_picker
     example/image_picker.cpp
-    ${SRCS}
+    ${SOURCES}
     ${image_picker_tool_MOC_CPP}
 )
 
 target_link_libraries (
     image_picker
     image_picker_tool
+)
+
+install(
+    FILES ${HEADERS}
+    DESTINATION include/sonar_toolkit/${PROJECT_NAME}
+)
+
+install(
+    TARGETS image_picker_tool
+    DESTINATION lib/sonar_toolkit
+)
+
+install(
+    TARGETS image_picker
+    DESTINATION bin
 )
