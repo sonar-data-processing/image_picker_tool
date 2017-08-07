@@ -28,7 +28,7 @@ include_directories (
 )
 
 add_library (
-    image_picker_tool STATIC
+    image_picker_tool SHARED
     ${SOURCES}
     ${image_picker_tool_MOC_CPP}
 )
