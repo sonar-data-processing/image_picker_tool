@@ -6,10 +6,9 @@ namespace image_picker_tool {
 
 ImagePickerTool::ImagePickerTool()
     : image_drawer_(new ImageDrawer())
-    , scroll_area_(new QScrollArea())
 {
     image_drawer_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-
+    scroll_area_ = new CustomScrollArea(this);
     scroll_area_->setBackgroundRole(QPalette::Dark);
     scroll_area_->setWidget(image_drawer_);
     scroll_area_->viewport()->installEventFilter(this);
@@ -106,6 +105,17 @@ int ImagePickerTool::findIndexByUserData(const QVariant& user_data) {
         }
     }
     return -1;
+}
+
+bool ImagePickerTool::processScrollKeyEventFilter(QKeyEvent *event) {
+    switch (event->key()) {
+        case Qt::Key_Up:
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+        case Qt::Key_Down:
+            return false;
+    }
+    return true;
 }
 
 } /* namespace image_picker_tool */

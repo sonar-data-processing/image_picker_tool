@@ -9,6 +9,8 @@
 
 namespace image_picker_tool {
 
+class CustomScrollArea;
+
 class ImagePickerTool : public QMainWindow {
     Q_OBJECT
 
@@ -50,8 +52,33 @@ private:
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
 
+    bool processScrollKeyEventFilter(QKeyEvent *event);
+
     QScrollArea *scroll_area_;
     ImageDrawer *image_drawer_;
+
+    friend class CustomScrollArea;
+
+};
+
+class CustomScrollArea : public QScrollArea  {
+public:
+    CustomScrollArea(ImagePickerTool *i) {
+        imagePickerTool = i;
+    }
+
+protected:
+
+    void keyPressEvent(QKeyEvent *event) {
+        if (!imagePickerTool->processScrollKeyEventFilter(event)) {
+            return;
+        }
+
+        QScrollArea::keyPressEvent(event);
+    }
+
+private:
+    ImagePickerTool *imagePickerTool;
 
 };
 
